@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-      <div className="text-4xl">Tailwind is working...</div>
+      <button className="text-4xl">Tailwind is working...</button>
     </>
   )
 }
