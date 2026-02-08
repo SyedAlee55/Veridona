@@ -1,16 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LoginSignup from './Pages/LoginSignup';
+import DonorDashboard from './Pages/DonorDashboard';
+import ReceiverDashboard from './Pages/ReceiverDashboard';
+import ProtectedRoute from './components/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <button className="text-4xl">Tailwind is working...</button>
-    </>
-  )
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<LoginSignup />} />
+          <Route path="/login" element={<LoginSignup />} />
+
+          <Route element={<ProtectedRoute allowedRoles={['donor']} />}>
+            <Route path="/donor" element={<DonorDashboard />} />
+          </Route>
+
+          <Route element={<ProtectedRoute allowedRoles={['receiver']} />}>
+            <Route path="/receiver" element={<ReceiverDashboard />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
 
-export default App
+export default App;

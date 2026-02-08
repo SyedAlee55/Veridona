@@ -7,7 +7,7 @@ const receiverController = require('../controllers/receiverController');
 router.use(authenticateJWT, authorizeRole('receiver'));
 
 // Receiver dashboard
-router.get('/receiver', receiverController.getReceiverDashboard);
+router.get('/', receiverController.getReceiverDashboard);
 
 // Receiver profile
 router.get('/profile', receiverController.getReceiverProfile);
