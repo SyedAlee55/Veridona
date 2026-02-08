@@ -7,7 +7,7 @@ const donorController = require('../controllers/donorController');
 router.use(authenticateJWT, authorizeRole('donor'));
 
 // Donor dashboard
-router.get('/donor', donorController.getDonorDashboard);
+router.get('/', donorController.getDonorDashboard);
 
 // Donor profile
 router.get('/profile', donorController.getDonorProfile);

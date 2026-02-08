@@ -20,9 +20,6 @@ const UserSchema = new mongoose.Schema({
         enum: ['donor', 'receiver', 'admin'],
         required: true,
     },
-    refreshToken: {
-        type: String,
-    },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);

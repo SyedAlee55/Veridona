@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const RefreshToken = require('../models/RefreshToken');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
@@ -64,8 +65,14 @@ exports.login = async (req, res) => {
         const accessToken = jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '15m' });
         const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET || 'refreshsecret', { expiresIn: '7d' });
 
-        user.refreshToken = refreshToken;
-        await user.save();
+        // Store refresh token in RefreshToken collection
+        await new RefreshToken({
+            token: refreshToken,
+            user: user.id
+        }).save();
+
+        console.log('User logged in successfully:', user.email);
+        console.log('Refresh token stored in dedicated collection');
 
         res.json({
             accessToken,
@@ -78,6 +85,7 @@ exports.login = async (req, res) => {
             },
         });
     } catch (err) {
+        console.error('Login error:', err);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -87,18 +95,71 @@ exports.refreshToken = async (req, res) => {
     if (!token) return res.status(401).json({ message: 'No token provided' });
 
     try {
-        const user = await User.findOne({ refreshToken: token });
-        if (!user) return res.status(403).json({ message: 'Invalid refresh token' });
+        const existingToken = await RefreshToken.findOne({ token });
 
-        jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || 'refreshsecret', (err, decoded) => {
-            if (err) return res.status(403).json({ message: 'Invalid refresh token' });
+        // If token is not found in DB but is valid signature-wise, it might be a reused token (security breach)
+        if (!existingToken) {
+            jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || 'refreshsecret', async (err, decoded) => {
+                if (!err && decoded) {
+                    // Possible token reuse detection - invalidate all tokens for this user
+                    console.warn(`[Security] Token reuse detected for user ID: ${decoded.id}`);
+                    // await RefreshToken.deleteMany({ user: decoded.id }); 
+                }
+            });
+            return res.status(403).json({ message: 'Invalid refresh token' });
+        }
 
+        jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || 'refreshsecret', async (err, decoded) => {
+            if (err) {
+                // If token is expired or invalid signature
+                await RefreshToken.findByIdAndDelete(existingToken._id); // Clear invalid token
+                return res.status(403).json({ message: 'Invalid refresh token' });
+            }
+
+            const user = await User.findById(decoded.id);
+            if (!user) return res.status(404).json({ message: 'User not found' });
+
+            // Token is valid - ROTATE IT
             const payload = { id: user.id, role: user.role };
-            const accessToken = jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '15m' });
+            const newAccessToken = jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '15m' });
+            const newRefreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET || 'refreshsecret', { expiresIn: '7d' });
 
-            res.json({ accessToken });
+            // Delete old token
+            await RefreshToken.findByIdAndDelete(existingToken._id);
+
+            // Create new token
+            await new RefreshToken({
+                token: newRefreshToken,
+                user: user.id
+            }).save();
+
+            console.log('Token rotated successfully for user:', user.email);
+
+            res.json({
+                accessToken: newAccessToken,
+                refreshToken: newRefreshToken
+            });
         });
     } catch (err) {
+        console.error('Refresh token error:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+exports.logout = async (req, res) => {
+    const { token } = req.body;
+
+    // Even if no token provided, we just send success to clear frontend state
+    if (!token) return res.status(200).json({ message: 'Logged out successfully' });
+
+    try {
+        const deletedToken = await RefreshToken.findOneAndDelete({ token });
+        if (deletedToken) {
+            console.log('User logged out, refresh token revoked');
+        }
+        res.status(200).json({ message: 'Logged out successfully' });
+    } catch (err) {
+        console.error('Logout error:', err);
         res.status(500).json({ message: 'Server error' });
     }
 };
