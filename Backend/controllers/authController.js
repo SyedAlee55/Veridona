@@ -62,7 +62,7 @@ exports.login = async (req, res) => {
         if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
 
         const payload = { id: user.id, role: user.role };
-        const accessToken = jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '15m' });
+        const accessToken = jwt.sign(payload, process.env.JWT_SECRET || 'secret', { expiresIn: '1m' });
         const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET || 'refreshsecret', { expiresIn: '7d' });
 
         // Store refresh token in RefreshToken collection
