@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LoginSignup from './Pages/LoginSignup';
-import DonorDashboard from './Pages/DonorDashboard';
+import DonorDashboard from './Pages/donor/DonorDashboard';
 import ReceiverDashboard from './Pages/ReceiverDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';

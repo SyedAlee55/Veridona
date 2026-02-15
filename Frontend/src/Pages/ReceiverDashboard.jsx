@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Box, Typography, Button, Paper } from '@mui/material';
+import Navbar from '../components/Navbar';
 
 const ReceiverDashboard = () => {
     const { user, api } = useAuth(); // Removed logout
