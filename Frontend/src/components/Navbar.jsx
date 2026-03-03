@@ -41,9 +41,12 @@ const Navbar = () => {
                         Veridona
                     </Typography>
 
+                    <Button color="inherit" onClick={() => navigate('/')} sx={{ fontWeight: '500' }}>Home</Button>
+                    <Button color="inherit" onClick={() => navigate('/login')} sx={{ fontWeight: '500' }}>Login</Button>
+
                     {user && (
                         <>
-                            <Button color="inherit" onClick={handleDashboardClick}>Dashboard</Button>
+                            <Button color="inherit" onClick={handleDashboardClick} sx={{ ml: 1 }}>Dashboard</Button>
                             <Button color="inherit" onClick={handleLogout} sx={{ ml: 1, border: '1px solid rgba(255,255,255,0.3)' }}>Logout</Button>
                         </>
                     )}

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LandingPage from './Pages/LandingPage';
 import LoginSignup from './Pages/LoginSignup';
-import DonorDashboard from './Pages/DonorDashboard';
+import DonorDashboard from './Pages/Donor/DonorDashboard';
 import ReceiverDashboard from './Pages/ReceiverDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
@@ -11,7 +12,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LoginSignup />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginSignup />} />
 
           <Route element={<ProtectedRoute allowedRoles={['donor']} />}>
