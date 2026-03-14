@@ -28,7 +28,7 @@ const ContactPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!formData.name || !formData.email || !formData.subject || !formData.message) {
             setResponseMessage('Please fill in all fields');
             return;
@@ -129,7 +129,7 @@ const ContactPage = () => {
                     </Grid>
 
                     {/* Contact Information */}
-                    <Grid item xs={12} md={6}>
+                    <Grid item size={12}>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                             <Card elevation={3}>
                                 <CardContent>

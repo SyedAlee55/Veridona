@@ -12,8 +12,13 @@ router.get('/', donorController.getDonorDashboard);
 // Donor profile
 router.get('/profile', donorController.getDonorProfile);
 
+const contactController = require('../controllers/contact.controller');
+
 // Add more donor-specific routes here
 // router.post('/donate', donorController.makeDonation);
 // router.get('/donations', donorController.getDonations);
+
+// Contact route
+router.post('/contact', contactController.sendContactEmail);
 
 module.exports = router;
