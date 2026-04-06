@@ -23,6 +23,7 @@ import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import TrackChangesIcon from '@mui/icons-material/TrackChanges';
+import HowToVoteIcon from '@mui/icons-material/HowToVote';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -48,6 +49,7 @@ const DonorDrawer = ({ children, currentPage }) => {
     const menuItems = [
         { label: 'Home', icon: <HomeIcon />, path: '/donor' },
         { label: 'Donation Page', icon: <FavoriteIcon />, path: '/donor/donation' },
+        { label: 'Campaigns', icon: <HowToVoteIcon />, path: '/donor/campaigns' },
         { label: 'Track Donation', icon: <TrackChangesIcon />, path: '/donor/track-donation' },
         { label: 'Claim NFT', icon: <CardGiftcardIcon />, path: '/donor/claim-nft' },
         { label: 'FAQ', icon: <HelpOutlineIcon />, path: '/donor/faq' },

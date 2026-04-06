@@ -20,6 +20,12 @@ const UserSchema = new mongoose.Schema({
         enum: ['donor', 'receiver', 'admin'],
         required: true,
     },
+    walletAddress: {
+        type: String,
+        default: null,
+        unique: true,
+        sparse: true, // Allows multiple null values
+    },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', UserSchema);

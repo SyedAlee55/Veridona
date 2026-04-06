@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 const AuthContext = createContext();
 
 const api = axios.create({
-    baseURL: 'http://localhost:5000/api', // Adjust if needed
+    baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 // Set up interceptors once when module loads
@@ -39,7 +39,7 @@ const setupInterceptors = (setToken, logoutFn) => {
                 try {
                     const refreshToken = localStorage.getItem('refreshToken');
                     console.log('Access token expired, attempting to refresh with token:', refreshToken ? 'Present' : 'Missing');
-                    const res = await axios.post('http://localhost:5000/api/auth/refresh', {
+                    const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/auth/refresh`, {
                         token: refreshToken,
                     });
                     if (res.status === 200) {

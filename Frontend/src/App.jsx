@@ -4,6 +4,7 @@ import LoginSignup from './Pages/LoginSignup';
 import DonorDashboard from './Pages/Donor/DonorDashboard';
 import DonationPage from './Pages/Donor/DonationPage';
 import ClaimNFTPage from './Pages/Donor/ClaimNFTPage';
+import CampaignsPage from './Pages/Donor/CampaignsPage';
 import FAQPage from './Pages/Donor/FAQPage';
 import ContactPage from './Pages/Donor/ContactPage';
 import TrackDonationPage from './Pages/Donor/TrackDonationPage';
@@ -25,6 +26,7 @@ function App() {
             <Route path="/donor" element={<DonorDashboard />} />
             <Route path="/donor/donation" element={<DonationPage />} />
             <Route path="/donor/claim-nft" element={<ClaimNFTPage />} />
+            <Route path="/donor/campaigns" element={<CampaignsPage />} />
             <Route path="/donor/faq" element={<FAQPage />} />
             <Route path="/donor/contact" element={<ContactPage />} />
             <Route path="/donor/track-donation" element={<TrackDonationPage />} />

@@ -1,4 +1,6 @@
 // Controller for donor-specific operations
+const User = require('../models/User');
+
 exports.getDonorDashboard = async (req, res) => {
     try {
         res.json({
@@ -7,7 +9,8 @@ exports.getDonorDashboard = async (req, res) => {
                 id: req.user._id,
                 username: req.user.username,
                 email: req.user.email,
-                role: req.user.role
+                role: req.user.role,
+                walletAddress: req.user.walletAddress || null,
             }
         });
     } catch (err) {
@@ -29,31 +32,47 @@ exports.getDonorProfile = async (req, res) => {
     }
 };
 
-// Fetch available and claimed NFTs for donor
+// Link wallet address to user account
+exports.linkWallet = async (req, res) => {
+    try {
+        const { walletAddress } = req.body;
+        if (!walletAddress || !walletAddress.startsWith('0x') || walletAddress.length !== 42) {
+            return res.status(400).json({ message: 'Invalid wallet address' });
+        }
+
+        // Check if wallet is already linked to another account
+        const existing = await User.findOne({ walletAddress, _id: { $ne: req.user._id } });
+        if (existing) {
+            return res.status(400).json({ message: 'Wallet already linked to another account' });
+        }
+
+        await User.findByIdAndUpdate(req.user._id, { walletAddress });
+        res.json({ message: 'Wallet linked successfully', walletAddress });
+    } catch (err) {
+        console.error('Link wallet error:', err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// NFTs are now read directly from the blockchain on the frontend
+// This endpoint returns guidance on how NFTs work
 exports.getNFTs = async (req, res) => {
     try {
-        // Dummy data for now
-        const nfts = [
-            { id: 'nft1', name: 'Life Saver Gold Certificate', eligibleDate: '2024-03-01', claimed: false },
-            { id: 'nft2', name: 'Blood Hero Badge', eligibleDate: '2024-02-15', claimed: true },
-            { id: 'nft3', name: 'Veridona Supporter Certificate', eligibleDate: '2024-01-10', claimed: true },
-        ];
-        res.json({ nfts });
+        res.json({
+            message: 'NFTs are on-chain. Connect your wallet on the ClaimNFT page to see your Soulbound Veridona Receipt.',
+            nfts: [],
+        });
     } catch (err) {
         console.error('Fetch NFTs error:', err);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-// Claim a specific NFT
+// Claim NFT — now handled by the smart contract automatically on first donation
 exports.claimNFT = async (req, res) => {
     try {
-        const { nftId } = req.params;
-        // Logic to link NFT to user in database would go here
         res.json({
-            message: 'NFT claimed successfully!',
-            nftId: nftId,
-            status: 'claimed'
+            message: 'NFT claiming is now automated on-chain. Your Soulbound NFT is minted automatically when you make your first donation via the smart contract.',
         });
     } catch (err) {
         console.error('Claim NFT error:', err);

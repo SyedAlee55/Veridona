@@ -21,6 +21,9 @@ const contactController = require('../controllers/contact.controller');
 // Contact route
 router.post('/contact', contactController.sendContactEmail);
 
+// Wallet linking route
+router.post('/link-wallet', donorController.linkWallet);
+
 // NFT routes
 router.get('/nfts', donorController.getNFTs);
 router.post('/claim-nft/:nftId', donorController.claimNFT);
