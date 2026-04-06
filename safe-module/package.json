@@ -1,0 +1,25 @@
+{
+  "name": "safe-module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "overrides": {
+    "@safe-global/safe-contracts": {
+      "ethers": "^6.13.5"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "@openzeppelin/contracts": "^5.6.1",
+    "@safe-global/safe-contracts": "^1.4.1-2",
+    "hardhat": "^2.28.6",
+    "hardhat-dependency-compiler": "^1.2.1"
+  }
+}
