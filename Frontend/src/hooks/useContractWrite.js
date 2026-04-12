@@ -30,6 +30,27 @@ export const useDonate = () => {
 };
 
 /**
+ * Hook to make a general donation directly to treasury
+ */
+export const useDonateGeneral = () => {
+    const { writeContract, data: hash, isPending, error } = useWriteContract();
+
+    const { isLoading: isConfirming, isSuccess: isConfirmed } =
+        useWaitForTransactionReceipt({ hash });
+
+    const donateGeneral = (amountInEther) => {
+        writeContract({
+            address: CONTRACT_ADDRESSES.DONATION_MODULE,
+            abi: DonationModuleABI,
+            functionName: 'donateGeneral',
+            value: parseEther(amountInEther.toString()),
+        });
+    };
+
+    return { donateGeneral, hash, isPending, isConfirming, isConfirmed, error };
+};
+
+/**
  * Hook to propose a new campaign
  */
 export const useProposeCampaign = () => {
@@ -65,6 +86,7 @@ export const useVoteForCampaign = () => {
             abi: DonationModuleABI,
             functionName: 'voteForCampaign',
             args: [BigInt(campaignId)],
+            gas: 1000000n, // Inject heavy buffer explicit gas limit to bypass provider defaults!
         });
     };
 

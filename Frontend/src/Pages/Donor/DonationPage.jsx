@@ -10,7 +10,7 @@ import ConnectWallet from '../../components/ConnectWallet';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useCampaignCount, useAllCampaigns } from '../../hooks/useContractRead';
-import { useDonate } from '../../hooks/useContractWrite';
+import { useDonate, useDonateGeneral } from '../../hooks/useContractWrite';
 import { getExplorerTxUrl } from '../../contracts/config';
 
 const DonationPage = () => {
@@ -24,12 +24,23 @@ const DonationPage = () => {
     const { campaigns } = useAllCampaigns(campaignCount);
     const activeCampaigns = campaigns.filter(c => c.isActive && !c.completed);
 
-    // Write hook for donating
-    const { donate, hash, isPending, isConfirming, isConfirmed, error } = useDonate();
+    // Write hooks for donating
+    const { donate, hash: hashC, isPending: isPendingC, isConfirming: isConfirmingC, isConfirmed: isConfirmedC, error: errorC } = useDonate();
+    const { donateGeneral, hash: hashG, isPending: isPendingG, isConfirming: isConfirmingG, isConfirmed: isConfirmedG, error: errorG } = useDonateGeneral();
+
+    const activeHash = hashC || hashG;
+    const isPending = isPendingC || isPendingG;
+    const isConfirming = isConfirmingC || isConfirmingG;
+    const isConfirmed = isConfirmedC || isConfirmedG;
+    const error = errorC || errorG;
 
     const handleDonate = () => {
         if (!selectedCampaign || !donationAmount || parseFloat(donationAmount) <= 0) return;
-        donate(selectedCampaign, donationAmount);
+        if (selectedCampaign === 'general') {
+            donateGeneral(donationAmount);
+        } else {
+            donate(selectedCampaign, donationAmount);
+        }
     };
 
     return (
@@ -82,6 +93,9 @@ const DonationPage = () => {
                                                 '& .MuiSvgIcon-root': { color: 'white' },
                                             }}
                                         >
+                                            <MenuItem value="general">
+                                                🌟 General Treasury (Donation without Campaign)
+                                            </MenuItem>
                                             {activeCampaigns.map((c) => (
                                                 <MenuItem key={c.id} value={c.id}>
                                                     Campaign #{c.id} — Goal: {c.goalFormatted} Sepolia ETH
@@ -184,7 +198,7 @@ const DonationPage = () => {
                 </Grid>
 
                 {/* Transaction status alerts */}
-                {hash && (
+                {activeHash && (
                     <Alert
                         severity="info"
                         sx={{ mt: 3, borderRadius: '12px' }}
@@ -192,7 +206,7 @@ const DonationPage = () => {
                             <Button
                                 color="inherit"
                                 size="small"
-                                href={getExplorerTxUrl(hash)}
+                                href={getExplorerTxUrl(activeHash)}
                                 target="_blank"
                                 endIcon={<OpenInNewIcon />}
                             >
