@@ -68,10 +68,17 @@ contract DonationModuleV2 {
         require(!hasVoted[_id][msg.sender], "You already voted");
         
         // Layer 1: Check if they have the Receipt NFT
-        require(IDonationReceipt(nftReceipt).balanceOf(msg.sender) > 0, "Must be a donor (hold NFT) to vote");
+        require(IDonationReceipt(nftReceipt).balanceOf(msg.sender) > 0, "Must hold NFT to vote");
 
-        // Layer 2 & 3: Calculate Voting Power = sqrt(totalDonated)
-        uint256 vp = sqrt(totalDonated[msg.sender]);
+        // Normalize: Divide by 1e18 to get the "Ether" value. Reduces gas of loop perfectly!
+        uint256 etherValue = totalDonated[msg.sender] / 1e18; 
+        
+        uint256 vp = sqrt(etherValue);
+        
+        if (vp == 0 && totalDonated[msg.sender] > 0) {
+            vp = 1; // Fallback so small donations aren't ignored
+        }
+
         require(vp > 0, "No donation history found");
 
         c.voteTally += vp;
@@ -110,6 +117,23 @@ contract DonationModuleV2 {
         }
 
         emit DonationReceived(_id, msg.sender, msg.value);
+    }
+
+    function donateGeneral() external payable {
+        require(msg.value > 0, "Donation must be > 0");
+
+        // Automatic NFT Minting for first-time donors
+        if (IDonationReceipt(nftReceipt).balanceOf(msg.sender) == 0) {
+            IDonationReceipt(nftReceipt).mintReceipt(msg.sender);
+        }
+
+        totalDonated[msg.sender] += msg.value; // Update lifetime reputation
+
+        // Forward funds immediately to the Gnosis Safe vault
+        (bool success, ) = safeTreasury.call{value: msg.value}("");
+        require(success, "Failed to send ETH to Gnosis Safe");
+
+        emit DonationReceived(0, msg.sender, msg.value);
     }
 
     // --- 3. SECURITY & AUTOMATED PAYOUT ---
