@@ -13,7 +13,7 @@ router.get('/', receiverController.getReceiverDashboard);
 router.get('/profile', receiverController.getReceiverProfile);
 
 // Add more receiver-specific routes here
-// router.post('/request', receiverController.createRequest);
-// router.get('/requests', receiverController.getRequests);
+router.post('/verify', receiverController.submitVerification);
+router.get('/status', receiverController.getVerificationStatus);
 
 module.exports = router;

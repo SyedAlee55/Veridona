@@ -12,8 +12,9 @@ router.get('/dashboard', adminController.getAdminDashboard);
 // Get all users (admin only)
 router.get('/users', adminController.getAllUsers);
 
-// Add more admin-specific routes here
-// router.delete('/users/:id', adminController.deleteUser);
-// router.put('/users/:id/role', adminController.updateUserRole);
+// Receiver verification queue
+router.get('/applications', adminController.getPendingApplications);
+router.post('/applications/approve', adminController.approveApplication);
+router.post('/applications/reject', adminController.rejectApplication);
 
 module.exports = router;

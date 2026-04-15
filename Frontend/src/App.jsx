@@ -13,9 +13,13 @@ import TrackDonationPage from './Pages/Donor/TrackDonationPage';
 
 // Receiver Pages
 import ReceiverDashboard from './Pages/ReceiverDashboard';
+import ReceiverVerifyPage from './Pages/Receiver/ReceiverVerifyPage';
 import MyCampaignsPage from './Pages/Receiver/MyCampaignsPage';
 import ReceiverFAQPage from './Pages/Receiver/FAQPage';
 import ReceiverContactPage from './Pages/Receiver/ContactPage';
+
+// Admin Pages
+import AdminDashboard from './Pages/AdminDashboard';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
@@ -43,9 +47,15 @@ function App() {
           {/* Receiver Routes */}
           <Route element={<ProtectedRoute allowedRoles={['receiver']} />}>
             <Route path="/receiver" element={<ReceiverDashboard />} />
+            <Route path="/receiver/verify" element={<ReceiverVerifyPage />} />
             <Route path="/receiver/campaigns" element={<MyCampaignsPage />} />
             <Route path="/receiver/faq" element={<ReceiverFAQPage />} />
             <Route path="/receiver/contact" element={<ReceiverContactPage />} />
+          </Route>
+
+          {/* Admin Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/admin" element={<AdminDashboard />} />
           </Route>
         </Routes>
       </BrowserRouter>

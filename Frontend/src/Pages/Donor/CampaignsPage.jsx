@@ -13,10 +13,10 @@ import GavelIcon from '@mui/icons-material/Gavel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import {
-    useCampaignCount, useAllCampaigns, useHasVoted, useVoteThreshold
+    useCampaignCount, useAllCampaigns
 } from '../../hooks/useContractRead';
 import {
-    useProposeCampaign, useVoteForCampaign, useDisputeCampaign
+    useProposeCampaign, useDisputeCampaign
 } from '../../hooks/useContractWrite';
 import { getExplorerTxUrl } from '../../contracts/config';
 
@@ -29,17 +29,11 @@ const CampaignsPage = () => {
     // Read hooks
     const { data: campaignCount, refetch: refetchCount } = useCampaignCount();
     const { campaigns, refetch: refetchCampaigns } = useAllCampaigns(campaignCount);
-    const { data: voteThreshold } = useVoteThreshold();
-
     // Write hooks
     const {
         proposeCampaign, hash: proposeHash, isPending: proposePending,
         isConfirming: proposeConfirming, isConfirmed: proposeConfirmed, error: proposeError
     } = useProposeCampaign();
-    const {
-        vote, hash: voteHash, isPending: votePending,
-        isConfirming: voteConfirming, isConfirmed: voteConfirmed, error: voteError
-    } = useVoteForCampaign();
     const {
         dispute, hash: disputeHash, isPending: disputePending,
         isConfirming: disputeConfirming, isConfirmed: disputeConfirmed, error: disputeError
@@ -57,16 +51,16 @@ const CampaignsPage = () => {
 
     // Refresh after confirmations
     React.useEffect(() => {
-        if (proposeConfirmed || voteConfirmed || disputeConfirmed) {
+        if (proposeConfirmed || disputeConfirmed) {
             setTimeout(handleRefresh, 2000);
         }
-    }, [proposeConfirmed, voteConfirmed, disputeConfirmed]);
+    }, [proposeConfirmed, disputeConfirmed]);
 
     const getStatusChip = (campaign) => {
         if (campaign.completed) return <Chip label="Completed" color="success" size="small" icon={<CheckCircleIcon />} />;
         if (campaign.isDisputed) return <Chip label="Disputed" color="error" size="small" icon={<WarningAmberIcon />} />;
         if (campaign.isActive) return <Chip label="Active" color="primary" size="small" />;
-        return <Chip label="Pending Votes" color="warning" size="small" icon={<HowToVoteIcon />} />;
+        return <Chip label="Inactive" color="default" size="small" />;
     };
 
     return (
@@ -113,20 +107,20 @@ const CampaignsPage = () => {
                         </Box>
 
                         {/* Transaction alerts */}
-                        {(proposeHash || voteHash || disputeHash) && (
+                        {(proposeHash || disputeHash) && (
                             <Alert severity="info" sx={{ mb: 3 }}>
                                 Transaction submitted!{' '}
-                                <a href={getExplorerTxUrl(proposeHash || voteHash || disputeHash)} target="_blank" rel="noreferrer">
+                                <a href={getExplorerTxUrl(proposeHash || disputeHash)} target="_blank" rel="noreferrer">
                                     View on Etherscan
                                 </a>
                             </Alert>
                         )}
-                        {(proposeConfirmed || voteConfirmed || disputeConfirmed) && (
+                        {(proposeConfirmed || disputeConfirmed) && (
                             <Alert severity="success" sx={{ mb: 3 }}>Transaction confirmed! ✅</Alert>
                         )}
-                        {(proposeError || voteError || disputeError) && (
+                        {(proposeError || disputeError) && (
                             <Alert severity="error" sx={{ mb: 3 }}>
-                                {(proposeError || voteError || disputeError)?.shortMessage || 'Transaction failed'}
+                                {(proposeError || disputeError)?.shortMessage || 'Transaction failed'}
                             </Alert>
                         )}
 
@@ -185,30 +179,10 @@ const CampaignsPage = () => {
 
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                                                 <Typography variant="body2" sx={{ color: '#666' }}>
-                                                    Votes: {campaign.voteTally?.toString()} / {voteThreshold?.toString() || '10'}
-                                                </Typography>
-                                                <Typography variant="body2" sx={{ color: '#666' }}>
                                                     Progress: {Math.min(campaign.progress, 100)}%
                                                 </Typography>
                                             </Box>
-
                                             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                                                {!campaign.isActive && !campaign.completed && (
-                                                    <Button
-                                                        size="small"
-                                                        variant="contained"
-                                                        startIcon={<HowToVoteIcon />}
-                                                        onClick={() => vote(campaign.id)}
-                                                        disabled={votePending || voteConfirming}
-                                                        sx={{
-                                                            background: 'linear-gradient(135deg, #151c3b 0%, #00d4ff 100%)',
-                                                            borderRadius: '8px',
-                                                            textTransform: 'none',
-                                                        }}
-                                                    >
-                                                        {votePending || voteConfirming ? 'Voting...' : 'Vote'}
-                                                    </Button>
-                                                )}
                                                 {campaign.isActive && !campaign.completed && !campaign.isDisputed && (
                                                     <Button
                                                         size="small"
@@ -244,8 +218,8 @@ const CampaignsPage = () => {
                             <DialogTitle sx={{ fontWeight: 'bold' }}>Propose New Campaign</DialogTitle>
                             <DialogContent>
                                 <Typography variant="body2" sx={{ mb: 3, color: '#666' }}>
-                                    Propose a new campaign for community voting. Once enough votes are received,
-                                    the campaign becomes active and can receive donations.
+                                    Verified organizations can propose new funding campaigns. Once proposed,
+                                    the campaign becomes active immediately.
                                 </Typography>
                                 <TextField
                                     label="Receiver Wallet Address"

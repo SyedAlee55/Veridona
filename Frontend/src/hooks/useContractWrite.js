@@ -1,7 +1,6 @@
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseEther } from 'viem';
 import DonationModuleABI from '../contracts/abis/DonationModuleV2.json';
-import DonationReceiptABI from '../contracts/abis/DonationReceipt.json';
 import { CONTRACT_ADDRESSES } from '../contracts/config';
 
 /**
@@ -51,7 +50,7 @@ export const useDonateGeneral = () => {
 };
 
 /**
- * Hook to propose a new campaign
+ * Hook to propose a new campaign (only callable by verified receivers)
  */
 export const useProposeCampaign = () => {
     const { writeContract, data: hash, isPending, error } = useWriteContract();
@@ -69,28 +68,6 @@ export const useProposeCampaign = () => {
     };
 
     return { proposeCampaign, hash, isPending, isConfirming, isConfirmed, error };
-};
-
-/**
- * Hook to vote for a campaign
- */
-export const useVoteForCampaign = () => {
-    const { writeContract, data: hash, isPending, error } = useWriteContract();
-
-    const { isLoading: isConfirming, isSuccess: isConfirmed } =
-        useWaitForTransactionReceipt({ hash });
-
-    const vote = (campaignId) => {
-        writeContract({
-            address: CONTRACT_ADDRESSES.DONATION_MODULE,
-            abi: DonationModuleABI,
-            functionName: 'voteForCampaign',
-            args: [BigInt(campaignId)],
-            gas: 1000000n, // Inject heavy buffer explicit gas limit to bypass provider defaults!
-        });
-    };
-
-    return { vote, hash, isPending, isConfirming, isConfirmed, error };
 };
 
 /**
@@ -133,4 +110,46 @@ export const useTriggerPayout = () => {
     };
 
     return { triggerPayout, hash, isPending, isConfirming, isConfirmed, error };
+};
+
+/**
+ * Admin: set receiver whitelist status on-chain
+ */
+export const useSetReceiverStatus = () => {
+    const { writeContract, data: hash, isPending, error } = useWriteContract();
+
+    const { isLoading: isConfirming, isSuccess: isConfirmed } =
+        useWaitForTransactionReceipt({ hash });
+
+    const setReceiverStatus = (receiverAddress, status) => {
+        writeContract({
+            address: CONTRACT_ADDRESSES.DONATION_MODULE,
+            abi: DonationModuleABI,
+            functionName: 'setReceiverStatus',
+            args: [receiverAddress, status],
+        });
+    };
+
+    return { setReceiverStatus, hash, isPending, isConfirming, isConfirmed, error };
+};
+
+/**
+ * Admin: remove / kill a fraudulent campaign on-chain
+ */
+export const useRemoveCampaign = () => {
+    const { writeContract, data: hash, isPending, error } = useWriteContract();
+
+    const { isLoading: isConfirming, isSuccess: isConfirmed } =
+        useWaitForTransactionReceipt({ hash });
+
+    const removeCampaign = (campaignId) => {
+        writeContract({
+            address: CONTRACT_ADDRESSES.DONATION_MODULE,
+            abi: DonationModuleABI,
+            functionName: 'removeCampaign',
+            args: [BigInt(campaignId)],
+        });
+    };
+
+    return { removeCampaign, hash, isPending, isConfirming, isConfirmed, error };
 };

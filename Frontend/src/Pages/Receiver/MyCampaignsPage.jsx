@@ -12,7 +12,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { useCampaignCount, useAllCampaigns, useVoteThreshold } from '../../hooks/useContractRead';
+import { useCampaignCount, useAllCampaigns, useIsVerifiedReceiver } from '../../hooks/useContractRead';
 import { useProposeCampaign, useTriggerPayout } from '../../hooks/useContractWrite';
 import { getExplorerTxUrl } from '../../contracts/config';
 
@@ -23,7 +23,9 @@ const MyCampaignsPage = () => {
 
     const { data: campaignCount, refetch: refetchCount } = useCampaignCount();
     const { campaigns, refetch: refetchCampaigns } = useAllCampaigns(campaignCount);
-    const { data: voteThreshold } = useVoteThreshold();
+
+    // On-chain whitelist check
+    const { data: isVerified } = useIsVerifiedReceiver(address);
 
     const {
         proposeCampaign, hash: proposeHash, isPending: proposePending,
@@ -37,6 +39,7 @@ const MyCampaignsPage = () => {
 
     const handlePropose = () => {
         if (!address || !goalAmount) return;
+        // msg.sender == _receiver enforced on-chain
         proposeCampaign(address, goalAmount);
     };
 
@@ -53,9 +56,32 @@ const MyCampaignsPage = () => {
 
     const getStatusChip = (campaign) => {
         if (campaign.completed) return <Chip label="Completed" color="success" size="small" icon={<CheckCircleIcon />} />;
-        if (campaign.isDisputed) return <Chip label="Disputed" color="error" size="small" icon={<WarningAmberIcon />} />;
+        if (campaign.isDisputed) return <Chip label="Removed" color="error" size="small" icon={<WarningAmberIcon />} />;
         if (campaign.isActive) return <Chip label="Active" color="primary" size="small" />;
-        return <Chip label="Pending Votes" color="warning" size="small" />;
+        return <Chip label="Inactive" color="default" size="small" />;
+    };
+
+    const getClaimLabel = (campaign) => {
+        if (!campaign.isActive || campaign.completed || campaign.isDisputed) return null;
+        const isGoalReached = campaign.currentBalance >= campaign.goal && campaign.goal > 0n;
+        if (!isGoalReached) return <Typography variant="body2" color="warning.main">Waiting for more donations.</Typography>;
+
+        const elapsed = Math.floor(Date.now() / 1000) - Number(campaign.goalReachedAt);
+        const secondsLeft = 86400 - elapsed;
+        if (secondsLeft > 0) {
+            const hrsLeft = Math.ceil(secondsLeft / 3600);
+            return <Typography variant="body2" color="info.main">⏳ Safety window: ~{hrsLeft}h remaining</Typography>;
+        }
+
+        return (
+            <Button
+                size="small" variant="contained" color="success" startIcon={<AttachMoneyIcon />}
+                onClick={() => triggerPayout(campaign.id)} disabled={payoutPending || payoutConfirming}
+                sx={{ borderRadius: '8px', textTransform: 'none' }}
+            >
+                {payoutPending || payoutConfirming ? 'Processing...' : 'Claim Funds'}
+            </Button>
+        );
     };
 
     // Filter to only show campaigns belonging to the connected receiver
@@ -79,6 +105,13 @@ const MyCampaignsPage = () => {
                             Connect your MetaMask wallet to view, create, and manage your campaigns.
                         </Typography>
                         <ConnectWallet />
+                    </Paper>
+                ) : !isVerified ? (
+                    <Paper elevation={3} sx={{ p: 6, textAlign: 'center', backgroundColor: '#fff8e1', borderRadius: '16px', border: '1px solid #f59e0b' }}>
+                        <Typography variant="h5" sx={{ mb: 2, color: '#b45309' }}>⏳ Not Yet Verified</Typography>
+                        <Typography variant="body1" sx={{ color: '#78350f' }}>
+                            Your wallet is not yet whitelisted on-chain. Please complete verification from your dashboard and wait for admin approval.
+                        </Typography>
                     </Paper>
                 ) : (
                     <>
@@ -109,10 +142,7 @@ const MyCampaignsPage = () => {
                         </Typography>
 
                         <Grid container spacing={3}>
-                            {myCampaigns.map((campaign) => {
-                                const isGoalReached = campaign.currentBalance >= campaign.goal && campaign.goal > 0n;
-
-                                return (
+                            {myCampaigns.map((campaign) => (
                                 <Grid item xs={12} md={6} key={campaign.id}>
                                     <Card
                                         elevation={3}
@@ -123,7 +153,7 @@ const MyCampaignsPage = () => {
                                                 <Typography variant="h6" sx={{ fontWeight: 'bold' }}>Campaign #{campaign.id}</Typography>
                                                 {getStatusChip(campaign)}
                                             </Box>
-                                            
+
                                             <Box sx={{ my: 2 }}>
                                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                                                     <Typography variant="body2" sx={{ fontWeight: 600 }}>{campaign.currentBalanceFormatted} ETH Raised</Typography>
@@ -136,48 +166,39 @@ const MyCampaignsPage = () => {
                                             </Box>
 
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                                                <Typography variant="body2" sx={{ color: '#666' }}>Votes: {campaign.voteTally?.toString()} / {voteThreshold?.toString() || '10'}</Typography>
                                                 <Typography variant="body2" sx={{ color: '#666' }}>Progress: {Math.min(campaign.progress, 100)}%</Typography>
+                                                {campaign.completed && <Typography variant="body2" color="success.main">Funds paid out ✓</Typography>}
                                             </Box>
 
-                                            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                                                {campaign.isActive && !campaign.completed && isGoalReached && !campaign.isDisputed && (
-                                                    <Button
-                                                        size="small" variant="contained" color="success" startIcon={<AttachMoneyIcon />}
-                                                        onClick={() => triggerPayout(campaign.id)} disabled={payoutPending || payoutConfirming}
-                                                        sx={{ borderRadius: '8px', textTransform: 'none' }}
-                                                    >
-                                                        {payoutPending || payoutConfirming ? 'Processing...' : 'Payout'}
-                                                    </Button>
-                                                )}
-                                                {campaign.isActive && !campaign.completed && !isGoalReached && (
-                                                    <Typography variant="body2" color="warning.main">Waiting for more donations.</Typography>
-                                                )}
-                                                {campaign.completed && (
-                                                    <Typography variant="body2" color="success.main">Funds successfully paid to your wallet.</Typography>
-                                                )}
+                                            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', minHeight: 36 }}>
+                                                {getClaimLabel(campaign)}
                                             </Box>
                                         </CardContent>
                                     </Card>
                                 </Grid>
-                            )})}
+                            ))}
                         </Grid>
 
                         {myCampaigns.length === 0 && (
                             <Paper elevation={3} sx={{ p: 4, textAlign: 'center', backgroundColor: '#f5f5f5', borderRadius: '16px' }}>
                                 <CampaignIcon sx={{ fontSize: 64, color: '#bbb', mb: 2 }} />
                                 <Typography variant="h6" sx={{ color: '#666', mb: 1 }}>No campaigns yet</Typography>
-                                <Typography variant="body2" sx={{ color: '#999' }}>Create one to start receiving donations!</Typography>
+                                <Typography variant="body2" sx={{ color: '#999' }}>Click "Create Campaign" to get started!</Typography>
                             </Paper>
                         )}
 
+                        {/* Create Campaign Dialog */}
                         <Dialog open={proposeOpen} onClose={() => setProposeOpen(false)} maxWidth="sm" fullWidth>
                             <DialogTitle sx={{ fontWeight: 'bold' }}>Create New Campaign</DialogTitle>
                             <DialogContent>
                                 <Typography variant="body2" sx={{ mb: 3, color: '#666' }}>
-                                    Your campaign will first need community votes to become active. Once active, donors can fund your wallet address directly.
+                                    As a verified receiver, your campaign will go <strong>live immediately</strong> upon creation. Donors can fund it right away.
                                 </Typography>
-                                <TextField label="Funding Goal (Sepolia ETH)" type="number" placeholder="0.1" fullWidth value={goalAmount} onChange={(e) => setGoalAmount(e.target.value)} inputProps={{ step: '0.01', min: '0' }} sx={{ mt: 1 }} />
+                                <TextField
+                                    label="Funding Goal (Sepolia ETH)" type="number" placeholder="0.1"
+                                    fullWidth value={goalAmount} onChange={(e) => setGoalAmount(e.target.value)}
+                                    inputProps={{ step: '0.01', min: '0' }} sx={{ mt: 1 }}
+                                />
                             </DialogContent>
                             <DialogActions>
                                 <Button onClick={() => setProposeOpen(false)}>Cancel</Button>
@@ -186,7 +207,7 @@ const MyCampaignsPage = () => {
                                     sx={{ background: 'linear-gradient(135deg, #00c6ff 0%, #0072ff 100%)' }}
                                 >
                                     {proposePending || proposeConfirming ? <CircularProgress size={20} sx={{ color: 'white', mr: 1 }} /> : null}
-                                    {proposePending ? 'Submitting...' : proposeConfirming ? 'Confirming...' : 'Create Campaign'}
+                                    {proposePending ? 'Submitting...' : proposeConfirming ? 'Confirming...' : 'Launch Campaign 🚀'}
                                 </Button>
                             </DialogActions>
                         </Dialog>

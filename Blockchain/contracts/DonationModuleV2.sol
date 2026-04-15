@@ -22,16 +22,14 @@ contract DonationModuleV2 {
     address public immutable nftReceipt;
     address public admin;
 
-    uint256 public constant VOTE_THRESHOLD = 10; // Target VP to activate campaign
     uint256 public constant SECURITY_DELAY = 24 hours;
 
     struct Campaign {
         address payable receiver;
         uint256 goal;
         uint256 currentBalance;
-        uint256 voteTally;      // Total Quadratic Voting Power
         uint256 goalReachedAt;  // Timestamp for the 24h safety clock
-        bool isActive;          // True if community voted it in
+        bool isActive;          // True if community voted it in (now automatic for verified receivers)
         bool isDisputed;        // Security flag to freeze payout
         bool completed;         // True if funds were sent
     }
@@ -41,12 +39,18 @@ contract DonationModuleV2 {
 
     // Reputation Tracking
     mapping(address => uint256) public totalDonated; 
-    mapping(uint256 => mapping(address => bool)) public hasVoted;
+    mapping(address => bool) public isVerifiedReceiver;
 
     event CampaignProposed(uint256 id, address receiver, uint256 goal);
-    event CampaignActivated(uint256 id);
+    event CampaignRemoved(uint256 id);
     event DonationReceived(uint256 id, address donor, uint256 amount);
     event PayoutTriggered(uint256 id, address receiver);
+    event ReceiverStatusUpdated(address receiver, bool status);
+
+    modifier onlyAdmin() {
+        require(msg.sender == admin, "Only admin can call this");
+        _;
+    }
 
     constructor(address _safeTreasury, address _nftReceipt) {
         safeTreasury = _safeTreasury;
@@ -54,48 +58,42 @@ contract DonationModuleV2 {
         admin = msg.sender;
     }
 
-    // --- 1. PROPOSAL & VOTING ---
-
-    function proposeCampaign(address payable _receiver, uint256 _goal) external {
-        campaignCount++;
-        campaigns[campaignCount] = Campaign(_receiver, _goal, 0, 0, 0, false, false, false);
-        emit CampaignProposed(campaignCount, _receiver, _goal);
+    // --- ADMIN METHODS ---
+    function setReceiverStatus(address _receiver, bool _status) external onlyAdmin {
+        isVerifiedReceiver[_receiver] = _status;
+        emit ReceiverStatusUpdated(_receiver, _status);
     }
 
-    function voteForCampaign(uint256 _id) external {
-        Campaign storage c = campaigns[_id];
-        require(!c.isActive, "Campaign is already active");
-        require(!hasVoted[_id][msg.sender], "You already voted");
-        
-        // Layer 1: Check if they have the Receipt NFT
-        require(IDonationReceipt(nftReceipt).balanceOf(msg.sender) > 0, "Must hold NFT to vote");
+    function removeCampaign(uint256 _id) external onlyAdmin {
+        require(_id > 0 && _id <= campaignCount, "Invalid campaign ID");
+        campaigns[_id].isActive = false;
+        campaigns[_id].isDisputed = true;
+        emit CampaignRemoved(_id);
+    }
 
-        // Normalize: Divide by 1e18 to get the "Ether" value. Reduces gas of loop perfectly!
-        uint256 etherValue = totalDonated[msg.sender] / 1e18; 
-        
-        uint256 vp = sqrt(etherValue);
-        
-        if (vp == 0 && totalDonated[msg.sender] > 0) {
-            vp = 1; // Fallback so small donations aren't ignored
-        }
+    // --- 1. PROPOSAL ---
 
-        require(vp > 0, "No donation history found");
-
-        c.voteTally += vp;
-        hasVoted[_id][msg.sender] = true;
-
-        // If threshold met, campaign goes live
-        if (c.voteTally >= VOTE_THRESHOLD) {
-            c.isActive = true;
-            emit CampaignActivated(_id);
-        }
+    function proposeCampaign(address payable _receiver, uint256 _goal) external {
+        require(isVerifiedReceiver[msg.sender], "Not a verified receiver");
+        require(_receiver == msg.sender, "Receiver must match sender");
+        campaignCount++;
+        campaigns[campaignCount] = Campaign({
+            receiver: _receiver,
+            goal: _goal,
+            currentBalance: 0,
+            goalReachedAt: 0,
+            isActive: true, // Instant Activation
+            isDisputed: false,
+            completed: false
+        });
+        emit CampaignProposed(campaignCount, _receiver, _goal);
     }
 
     // --- 2. DONATION LOGIC ---
 
     function donate(uint256 _id) external payable {
         Campaign storage c = campaigns[_id];
-        require(c.isActive, "Campaign not yet approved by community");
+        require(c.isActive, "Campaign is not active");
         require(!c.completed, "Campaign already finalized");
         require(msg.value > 0, "Donation must be > 0");
 
@@ -164,20 +162,6 @@ contract DonationModuleV2 {
 
         require(success, "Gnosis Safe failed to execute payout");
         emit PayoutTriggered(_id, c.receiver);
-    }
-
-    // --- MATH HELPER: Babylonian Method for sqrt ---
-    function sqrt(uint y) internal pure returns (uint z) {
-        if (y > 3) {
-            z = y;
-            uint x = y / 2 + 1;
-            while (x < z) {
-                z = x;
-                x = (y / x + x) / 2;
-            }
-        } else if (y != 0) {
-            z = 1;
-        }
     }
 
     // Fallback to receive ETH if needed

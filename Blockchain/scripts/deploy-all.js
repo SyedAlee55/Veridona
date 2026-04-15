@@ -15,7 +15,7 @@ async function main() {
     console.log("================================================\n");
 
     // YOUR GNOSIS SAFE ADDRESS (Replace with yours)
-    const GNOSIS_SAFE_ADDRESS = process.env.GNOSIS_SAFE_ADDRESS;
+    const GNOSIS_SAFE_ADDRESS = "0x2781dc9A92659C64a392c989CFFda745d8B02f8E";
 
     console.log("Step 1: Deploying DonationReceipt (NFT)...");
     const DonationReceipt = await hre.ethers.getContractFactory("DonationReceipt");

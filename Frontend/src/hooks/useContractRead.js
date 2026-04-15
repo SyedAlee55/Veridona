@@ -27,17 +27,16 @@ export const useCampaign = (campaignId) => {
         query: { enabled: !!campaignId },
     });
 
-    // Parse the campaign struct
+    // Parse the campaign struct (voteTally removed)
     const campaign = result.data
         ? {
             receiver: result.data[0],
             goal: result.data[1],
             currentBalance: result.data[2],
-            voteTally: result.data[3],
-            goalReachedAt: result.data[4],
-            isActive: result.data[5],
-            isDisputed: result.data[6],
-            completed: result.data[7],
+            goalReachedAt: result.data[3],
+            isActive: result.data[4],
+            isDisputed: result.data[5],
+            completed: result.data[6],
             goalFormatted: formatEther(result.data[1]),
             currentBalanceFormatted: formatEther(result.data[2]),
             progress: result.data[1] > 0n
@@ -78,11 +77,10 @@ export const useAllCampaigns = (count) => {
             receiver: d[0],
             goal: d[1],
             currentBalance: d[2],
-            voteTally: d[3],
-            goalReachedAt: d[4],
-            isActive: d[5],
-            isDisputed: d[6],
-            completed: d[7],
+            goalReachedAt: d[3],
+            isActive: d[4],
+            isDisputed: d[5],
+            completed: d[6],
             goalFormatted: formatEther(d[1]),
             currentBalanceFormatted: formatEther(d[2]),
             progress: d[1] > 0n ? Number((d[2] * 100n) / d[1]) : 0,
@@ -90,19 +88,6 @@ export const useAllCampaigns = (count) => {
     }).filter(Boolean);
 
     return { ...result, campaigns };
-};
-
-/**
- * Check if a user has voted for a specific campaign
- */
-export const useHasVoted = (campaignId, userAddress) => {
-    return useReadContract({
-        address: CONTRACT_ADDRESSES.DONATION_MODULE,
-        abi: DonationModuleABI,
-        functionName: 'hasVoted',
-        args: [BigInt(campaignId || 0), userAddress],
-        query: { enabled: !!campaignId && !!userAddress },
-    });
 };
 
 /**
@@ -150,12 +135,14 @@ export const useNFTBalance = (userAddress) => {
 };
 
 /**
- * Get the vote threshold constant
+ * Check if an address is a verified receiver on-chain
  */
-export const useVoteThreshold = () => {
+export const useIsVerifiedReceiver = (address) => {
     return useReadContract({
         address: CONTRACT_ADDRESSES.DONATION_MODULE,
         abi: DonationModuleABI,
-        functionName: 'VOTE_THRESHOLD',
+        functionName: 'isVerifiedReceiver',
+        args: [address],
+        query: { enabled: !!address },
     });
 };
