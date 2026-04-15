@@ -71,14 +71,14 @@ const DonorDashboard = () => {
 
     return (
         <DonorDrawer currentPage="/donor">
-            <Box sx={{ p: { xs: 2, sm: 4 }, maxWidth: '1200px', mx: 'auto' }}>
+            <Box sx={{ width: '100%', p: { xs: 2, sm: 4 }, maxWidth: '1200px', mx: 'auto' }}>
                 {/* Welcome Section */}
                 <Paper
                     elevation={3}
                     sx={{
                         p: 4,
                         mb: 4,
-                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        background: 'linear-gradient(135deg, #151c3b 0%, #00d4ff 100%)',
                         color: 'white',
                         borderRadius: '12px',
                     }}
@@ -139,7 +139,7 @@ const DonorDashboard = () => {
                                         size="small"
                                         sx={{
                                             mt: 'auto',
-                                            background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                                            background: 'linear-gradient(90deg, #151c3b 0%, #00d4ff 100%)',
                                             textTransform: 'none',
                                             fontWeight: '600',
                                         }}

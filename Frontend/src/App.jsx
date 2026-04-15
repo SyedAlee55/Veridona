@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import LandingPage from './Pages/LandingPage';
 import LoginSignup from './Pages/LoginSignup';
+
+// Donor Pages
 import DonorDashboard from './Pages/Donor/DonorDashboard';
 import DonationPage from './Pages/Donor/DonationPage';
 import ClaimNFTPage from './Pages/Donor/ClaimNFTPage';
@@ -8,7 +10,13 @@ import CampaignsPage from './Pages/Donor/CampaignsPage';
 import FAQPage from './Pages/Donor/FAQPage';
 import ContactPage from './Pages/Donor/ContactPage';
 import TrackDonationPage from './Pages/Donor/TrackDonationPage';
+
+// Receiver Pages
 import ReceiverDashboard from './Pages/ReceiverDashboard';
+import MyCampaignsPage from './Pages/Receiver/MyCampaignsPage';
+import ReceiverFAQPage from './Pages/Receiver/FAQPage';
+import ReceiverContactPage from './Pages/Receiver/ContactPage';
+
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import './App.css';
@@ -35,6 +43,9 @@ function App() {
           {/* Receiver Routes */}
           <Route element={<ProtectedRoute allowedRoles={['receiver']} />}>
             <Route path="/receiver" element={<ReceiverDashboard />} />
+            <Route path="/receiver/campaigns" element={<MyCampaignsPage />} />
+            <Route path="/receiver/faq" element={<ReceiverFAQPage />} />
+            <Route path="/receiver/contact" element={<ReceiverContactPage />} />
           </Route>
         </Routes>
       </BrowserRouter>

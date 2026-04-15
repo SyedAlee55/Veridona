@@ -85,7 +85,7 @@ const LoginSignup = () => {
                 flexDirection: 'column', // Changed to column to stack Navbar and Content
                 height: '100vh',
                 width: '100vw',
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: 'linear-gradient(135deg, #151c3b 0%, #00d4ff 100%)',
             }}
         >
             <Navbar />

@@ -45,7 +45,7 @@ const DonationPage = () => {
 
     return (
         <DonorDrawer currentPage="/donor/donation">
-            <Box sx={{ p: { xs: 2, sm: 4 }, maxWidth: '1200px', mx: 'auto' }}>
+            <Box sx={{ width: '100%', p: { xs: 2, sm: 4 }, maxWidth: '1200px', mx: 'auto' }}>
                 <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold', color: '#333' }}>
                     <FavoriteBorderIcon sx={{ mr: 2, verticalAlign: 'middle', color: '#e53935' }} />
                     Make a Donation
@@ -57,7 +57,7 @@ const DonationPage = () => {
                             elevation={3}
                             sx={{
                                 p: 4,
-                                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                background: 'linear-gradient(135deg, #151c3b 0%, #00d4ff 100%)',
                                 color: 'white',
                                 borderRadius: '16px',
                             }}
@@ -134,7 +134,7 @@ const DonationPage = () => {
                                         disabled={isPending || isConfirming || !selectedCampaign || !donationAmount}
                                         sx={{
                                             backgroundColor: 'white',
-                                            color: '#667eea',
+                                            color: '#151c3b',
                                             fontWeight: 'bold',
                                             borderRadius: '12px',
                                             py: 1.5,
@@ -166,23 +166,23 @@ const DonationPage = () => {
                                 </Typography>
                                 <Box sx={{ mb: 2 }}>
                                     <Typography variant="body2" sx={{ mb: 1.5, display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                                        <Box component="span" sx={{ fontWeight: 'bold', color: '#667eea', minWidth: '20px' }}>1.</Box>
+                                        <Box component="span" sx={{ fontWeight: 'bold', color: '#151c3b', minWidth: '20px' }}>1.</Box>
                                         Connect your MetaMask wallet (Sepolia testnet)
                                     </Typography>
                                     <Typography variant="body2" sx={{ mb: 1.5, display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                                        <Box component="span" sx={{ fontWeight: 'bold', color: '#667eea', minWidth: '20px' }}>2.</Box>
+                                        <Box component="span" sx={{ fontWeight: 'bold', color: '#151c3b', minWidth: '20px' }}>2.</Box>
                                         Select an active campaign to donate to
                                     </Typography>
                                     <Typography variant="body2" sx={{ mb: 1.5, display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                                        <Box component="span" sx={{ fontWeight: 'bold', color: '#667eea', minWidth: '20px' }}>3.</Box>
+                                        <Box component="span" sx={{ fontWeight: 'bold', color: '#151c3b', minWidth: '20px' }}>3.</Box>
                                         Enter ETH amount and confirm the transaction
                                     </Typography>
                                     <Typography variant="body2" sx={{ mb: 1.5, display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                                        <Box component="span" sx={{ fontWeight: 'bold', color: '#667eea', minWidth: '20px' }}>4.</Box>
+                                        <Box component="span" sx={{ fontWeight: 'bold', color: '#151c3b', minWidth: '20px' }}>4.</Box>
                                         Funds go directly to the Gnosis Safe treasury
                                     </Typography>
                                     <Typography variant="body2" sx={{ mb: 1.5, display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                                        <Box component="span" sx={{ fontWeight: 'bold', color: '#667eea', minWidth: '20px' }}>5.</Box>
+                                        <Box component="span" sx={{ fontWeight: 'bold', color: '#151c3b', minWidth: '20px' }}>5.</Box>
                                         First-time donors get a Soulbound NFT receipt automatically!
                                     </Typography>
                                 </Box>

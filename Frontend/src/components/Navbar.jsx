@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, Button, Box, IconButton } from '@mui/mater
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import MenuIcon from '@mui/icons-material/Menu';
-import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism'; // Assuming this icon is suitable for Veridona
+ // Assuming this icon is suitable for Veridona
 
 const Navbar = () => {
     const { user, logout } = useAuth();
@@ -26,7 +26,7 @@ const Navbar = () => {
 
     return (
         <Box sx={{ flexGrow: 1, mb: 2, position: 'fixed', width: '100%' }}>
-            <AppBar position="static" sx={{ background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)' }}>
+            <AppBar position="static" sx={{ background: 'linear-gradient(90deg, #151c3b 0%, #00d4ff 100%)' }}>
                 <Toolbar>
                     <IconButton
                         size="large"
@@ -35,7 +35,7 @@ const Navbar = () => {
                         aria-label="menu"
                         sx={{ mr: 2 }}
                     >
-                        <VolunteerActivismIcon />
+                        <Box component="img" src="/Veridona.png" alt="Veridona Logo" sx={{ width: 32, height: 32 }} />
                     </IconButton>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1, cursor: 'pointer', fontWeight: 'bold' }} onClick={() => navigate('/')}>
                         Veridona

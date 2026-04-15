@@ -56,7 +56,7 @@ const FAQPage = () => {
 
     return (
         <DonorDrawer currentPage="/donor/faq">
-            <Box sx={{ p: { xs: 2, sm: 4 }, maxWidth: '1000px', mx: 'auto' }}>
+            <Box sx={{ width: '100%', p: { xs: 2, sm: 4 }, maxWidth: '1200px', mx: 'auto' }}>
                 <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold', color: '#333', display: 'flex', alignItems: 'center' }}>
                     <HelpOutlineIcon sx={{ mr: 2, color: '#2196f3' }} />
                     Frequently Asked Questions
@@ -99,7 +99,7 @@ const FAQPage = () => {
                                     variant="subtitle1"
                                     sx={{
                                         fontWeight: expanded === faq.id ? 'bold' : '600',
-                                        color: expanded === faq.id ? '#667eea' : '#333',
+                                        color: expanded === faq.id ? '#151c3b' : '#333',
                                     }}
                                 >
                                     {faq.question}

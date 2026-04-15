@@ -22,9 +22,8 @@ const UserSchema = new mongoose.Schema({
     },
     walletAddress: {
         type: String,
-        default: null,
         unique: true,
-        sparse: true, // Allows multiple null values
+        sparse: true, // Allows multiple missing values
     },
 }, { timestamps: true });
 

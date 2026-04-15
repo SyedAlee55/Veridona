@@ -71,10 +71,10 @@ const CampaignsPage = () => {
 
     return (
         <DonorDrawer currentPage="/donor/campaigns">
-            <Box sx={{ p: { xs: 2, sm: 4 }, maxWidth: '1200px', mx: 'auto' }}>
+            <Box sx={{ width: '100%', p: { xs: 2, sm: 4 }, maxWidth: '1200px', mx: 'auto' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
                     <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#333' }}>
-                        <HowToVoteIcon sx={{ mr: 2, verticalAlign: 'middle', color: '#667eea' }} />
+                        <HowToVoteIcon sx={{ mr: 2, verticalAlign: 'middle', color: '#151c3b' }} />
                         Campaigns
                     </Typography>
                     <ConnectWallet />
@@ -82,7 +82,7 @@ const CampaignsPage = () => {
 
                 {!isConnected ? (
                     <Paper elevation={3} sx={{ p: 6, textAlign: 'center', backgroundColor: '#f8f9ff', borderRadius: '16px' }}>
-                        <AccountIcon sx={{ fontSize: 80, color: '#667eea', mb: 2, opacity: 0.5 }} />
+                        <AccountIcon sx={{ fontSize: 80, color: '#151c3b', mb: 2, opacity: 0.5 }} />
                         <Typography variant="h5" sx={{ mb: 2, color: '#333' }}>Connect Your Wallet</Typography>
                         <Typography variant="body1" sx={{ color: '#666', mb: 3 }}>
                             Connect your MetaMask wallet to view, propose, and vote on campaigns.
@@ -98,7 +98,7 @@ const CampaignsPage = () => {
                                 startIcon={<AddCircleOutlineIcon />}
                                 onClick={() => setProposeOpen(true)}
                                 sx={{
-                                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                    background: 'linear-gradient(135deg, #151c3b 0%, #00d4ff 100%)',
                                     borderRadius: '12px',
                                     textTransform: 'none',
                                     fontWeight: 'bold',
@@ -144,7 +144,7 @@ const CampaignsPage = () => {
                                             borderRadius: '16px',
                                             transition: 'all 0.3s ease',
                                             '&:hover': { transform: 'translateY(-4px)', boxShadow: 6 },
-                                            border: campaign.isActive ? '2px solid #667eea' : '1px solid #e0e0e0',
+                                            border: campaign.isActive ? '2px solid #151c3b' : '1px solid #e0e0e0',
                                         }}
                                     >
                                         <CardContent sx={{ p: 3 }}>
@@ -176,7 +176,7 @@ const CampaignsPage = () => {
                                                         borderRadius: 5,
                                                         backgroundColor: '#e0e0e0',
                                                         '& .MuiLinearProgress-bar': {
-                                                            background: 'linear-gradient(90deg, #667eea, #764ba2)',
+                                                            background: 'linear-gradient(90deg, #151c3b, #00d4ff)',
                                                             borderRadius: 5,
                                                         },
                                                     }}
@@ -201,7 +201,7 @@ const CampaignsPage = () => {
                                                         onClick={() => vote(campaign.id)}
                                                         disabled={votePending || voteConfirming}
                                                         sx={{
-                                                            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                                            background: 'linear-gradient(135deg, #151c3b 0%, #00d4ff 100%)',
                                                             borderRadius: '8px',
                                                             textTransform: 'none',
                                                         }}
@@ -272,7 +272,7 @@ const CampaignsPage = () => {
                                     onClick={handlePropose}
                                     disabled={proposePending || proposeConfirming || !receiverAddr || !goalAmount}
                                     sx={{
-                                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        background: 'linear-gradient(135deg, #151c3b 0%, #00d4ff 100%)',
                                     }}
                                 >
                                     {proposePending || proposeConfirming ? (

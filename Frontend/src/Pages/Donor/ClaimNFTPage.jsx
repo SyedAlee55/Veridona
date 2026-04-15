@@ -24,7 +24,7 @@ const ClaimNFTPage = () => {
 
     return (
         <DonorDrawer currentPage="/donor/claim-nft">
-            <Box sx={{ p: { xs: 2, sm: 4 }, maxWidth: '1200px', mx: 'auto' }}>
+            <Box sx={{ width: '100%', p: { xs: 2, sm: 4 }, maxWidth: '1200px', mx: 'auto' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
                     <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#333' }}>
                         <CardGiftcardIcon sx={{ mr: 2, verticalAlign: 'middle', color: '#f57c00' }} />
@@ -61,7 +61,7 @@ const ClaimNFTPage = () => {
                                     borderRadius: '20px',
                                     overflow: 'hidden',
                                     background: hasReceipt
-                                        ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                                        ? 'linear-gradient(135deg, #151c3b 0%, #00d4ff 100%)'
                                         : 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
                                     color: hasReceipt ? 'white' : '#666',
                                     transition: 'all 0.3s ease',
@@ -123,7 +123,7 @@ const ClaimNFTPage = () => {
                                             <Typography variant="caption" sx={{ color: '#999', textTransform: 'uppercase', letterSpacing: 1 }}>
                                                 NFT Balance
                                             </Typography>
-                                            <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#667eea' }}>
+                                            <Typography variant="h3" sx={{ fontWeight: 'bold', color: '#151c3b' }}>
                                                 {nftBalance?.toString() || '0'}
                                             </Typography>
                                             <Typography variant="body2" sx={{ color: '#999' }}>

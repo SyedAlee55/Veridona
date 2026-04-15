@@ -48,7 +48,7 @@ const ContactPage = () => {
 
     return (
         <DonorDrawer currentPage="/donor/contact">
-            <Box sx={{ p: { xs: 2, sm: 4 }, maxWidth: '1200px', mx: 'auto' }}>
+            <Box sx={{ width: '100%', p: { xs: 2, sm: 4 }, maxWidth: '1200px', mx: 'auto' }}>
                 <Typography variant="h4" sx={{ mb: 4, fontWeight: 'bold', color: '#333', display: 'flex', alignItems: 'center' }}>
                     <ContactMailIcon sx={{ mr: 2, color: '#ff6f00' }} />
                     Contact Us
@@ -108,7 +108,7 @@ const ContactPage = () => {
                                     disabled={loading}
                                     sx={{
                                         mt: 3,
-                                        background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                                        background: 'linear-gradient(90deg, #151c3b 0%, #00d4ff 100%)',
                                         fontWeight: 'bold',
                                         py: 1.5,
                                     }}
@@ -134,7 +134,7 @@ const ContactPage = () => {
                             <Card elevation={3}>
                                 <CardContent>
                                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                                        <EmailIcon sx={{ color: '#667eea', fontSize: 28 }} />
+                                        <EmailIcon sx={{ color: '#151c3b', fontSize: 28 }} />
                                         <Box>
                                             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                                                 Email
@@ -150,7 +150,7 @@ const ContactPage = () => {
                             <Card elevation={3}>
                                 <CardContent>
                                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                                        <PhoneIcon sx={{ color: '#667eea', fontSize: 28 }} />
+                                        <PhoneIcon sx={{ color: '#151c3b', fontSize: 28 }} />
                                         <Box>
                                             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                                                 Phone
@@ -166,7 +166,7 @@ const ContactPage = () => {
                             <Card elevation={3}>
                                 <CardContent>
                                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                                        <LocationOnIcon sx={{ color: '#667eea', fontSize: 28 }} />
+                                        <LocationOnIcon sx={{ color: '#151c3b', fontSize: 28 }} />
                                         <Box>
                                             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                                                 Address

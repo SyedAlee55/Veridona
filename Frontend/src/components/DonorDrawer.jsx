@@ -16,7 +16,7 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-import VolunteerActivismIcon from '@mui/icons-material/VolunteerActivism';
+
 import HomeIcon from '@mui/icons-material/Home';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
@@ -65,13 +65,13 @@ const DonorDrawer = ({ children, currentPage }) => {
                     display: 'flex',
                     alignItems: 'center',
                     gap: 1,
-                    background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                    background: 'linear-gradient(90deg, #151c3b 0%, #00d4ff 100%)',
                     color: 'white',
                     cursor: 'pointer',
                 }}
                 onClick={() => navigate('/')}
             >
-                <VolunteerActivismIcon sx={{ fontSize: 32 }} />
+                <Box component="img" src="/Veridona.png" alt="Veridona Logo" sx={{ width: 32, height: 32 }} />
                 <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
                     Veridona
                 </Typography>
@@ -103,17 +103,17 @@ const DonorDrawer = ({ children, currentPage }) => {
                         }}
                         sx={{
                             backgroundColor: currentPage === item.path ? '#e3f2fd' : 'transparent',
-                            borderLeft: currentPage === item.path ? '4px solid #667eea' : 'none',
+                            borderLeft: currentPage === item.path ? '4px solid #151c3b' : 'none',
                             paddingLeft: currentPage === item.path ? '12px' : '16px',
                             '&:hover': {
                                 backgroundColor: '#f5f5f5',
                             },
-                            color: currentPage === item.path ? '#667eea' : 'inherit',
+                            color: currentPage === item.path ? '#151c3b' : 'inherit',
                         }}
                     >
                         <ListItemIcon
                             sx={{
-                                color: currentPage === item.path ? '#667eea' : 'inherit',
+                                color: currentPage === item.path ? '#151c3b' : 'inherit',
                                 minWidth: 40,
                             }}
                         >
@@ -167,7 +167,7 @@ const DonorDrawer = ({ children, currentPage }) => {
                 <AppBar
                     position="fixed"
                     sx={{
-                        background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                        background: 'linear-gradient(90deg, #151c3b 0%, #00d4ff 100%)',
                         zIndex: (theme) => theme.zIndex.drawer + 1,
                     }}
                 >
